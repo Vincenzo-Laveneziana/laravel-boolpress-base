@@ -15,5 +15,14 @@ class InfoUser extends Model
     ];
 
     public $timestamps = false;
-    
+
+    /* 
+    Db relationships
+    */
+    public function user() {
+
+        return $this->belongsTo('App\User');
+
+    }
+
 }
