@@ -12,8 +12,14 @@ class Post extends Model
         'body',
     ];
 
-   //user (many to one)
-   public function user() {
-       return $this->belongsTo('App\User');
-   }
+    //user (many to one)
+    public function user() {
+        return $this->belongsTo('App\User');
+    }
+
+    //comment (one to many)
+
+    public function comments() {
+        return $this->hasMany('App\Comment');
+    }
 }

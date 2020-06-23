@@ -2,14 +2,26 @@
 
 @section('content')
    <h2 class="text-center m-5">Post archive</h2>
-   
+  
    @foreach ($posts as $post)
     <article class="container">
+        
+        
+        <h6>{{ $post->id }}</h6>
         <h2>{{ $post->title }}</h2>
         <h4 class="author">{{ $post->user->name }}</h4>
         <h4>Created: {{ $post->created_at }} , Last updated: {{ $post->updated_at }}</h4>
         <p>{{ $post->body }}</p>
+        {{--  @dd($comments) --}}
+        <span class="text-primary">Comment</span>
+        
+        @foreach ($post->comments as $comment)
+        
+            <p>--{{$comment->body}}</p>
+            
+        @endforeach
     </article>
+
 
     @if (! $loop->last)
         <hr>
