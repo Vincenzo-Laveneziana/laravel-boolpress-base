@@ -11,8 +11,6 @@ class Comment extends Model
         'body',
     ];
 
-    public $timestamps = false;
-
     /* 
     db relationships
     */

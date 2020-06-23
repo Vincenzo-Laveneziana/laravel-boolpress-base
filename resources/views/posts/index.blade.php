@@ -13,13 +13,13 @@
         <h4>Created: {{ $post->created_at }} , Last updated: {{ $post->updated_at }}</h4>
         <p>{{ $post->body }}</p>
         {{--  @dd($comments) --}}
-        <span class="text-primary">Comment</span>
+        <a href="{{ route('posts.show', $post)}}">Comment</a>
         
-        @foreach ($post->comments as $comment)
+        {{-- @foreach ($post->comments as $comment)
         
             <p>--{{$comment->body}}</p>
             
-        @endforeach
+        @endforeach --}}
     </article>
 
 

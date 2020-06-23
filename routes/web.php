@@ -23,5 +23,3 @@ Route::resource('users', 'UserController');
 //Post
 Route::resource('posts', 'PostController');
 
-//Comment
-Route::resource('comments', 'CommentController');
