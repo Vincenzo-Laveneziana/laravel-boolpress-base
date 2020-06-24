@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Post;
 use App\Comment;
+use App\Tag;
+use App\User;
+use Illuminate\Support\Str;
 
 class PostController extends Controller
 {
@@ -16,7 +19,7 @@ class PostController extends Controller
     public function index()
     {
         //$posts = Post::all();
-        $posts = Post::paginate(3);
+        $posts = Post::orderBy('created_at', 'desc')->paginate(4);
 
         return view('posts.index', compact('posts'));
     }
@@ -27,8 +30,10 @@ class PostController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function create()
-    {
-        //
+    {   
+        $tags = Tag::all();
+
+        return view('posts.create', compact('tags'));
     }
 
     /**
@@ -39,7 +44,35 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        //dd($request->all());
+
+        $request->validate([
+            'title' => 'required', 
+            'body' => 'required',
+            'tags.*' => 'exists:tags,id'
+        ]);
+
+        $data = $request->all();
+
+        //get user id
+        $users = User::all();
+        $data['user_id'] = $users->random()->id;
+
+        //generate post slug    
+        $data['slug'] = Str::slug($data['title'], '-');
+
+        //new post 
+        $newPost = new Post();
+        $newPost->fill($data);
+        $saved = $newPost->save();
+
+        if ($saved) {
+            if (!empty($data['tags'])) {
+                $newPost->tags()->attach($data['tags']);
+            }
+
+            return redirect()->route('posts.show', $newPost->slug);
+        }
     }
 
     /**
@@ -50,10 +83,10 @@ class PostController extends Controller
      */
     public function show($slug)
     {
-        /* $comments = Comment::where(     ->g'post_id', $post->id)
-                   et();
+        /* $comments = Comment::where('post_id', $post->id)
+                   ->get(); */
 
-        return view('posts.show', compact('post', 'comments')); */
+        /* return view('posts.show', compact('post', 'comments')); */
 
         $post = Post::where('slug', $slug)
                 ->first();
@@ -71,9 +104,10 @@ class PostController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
-    {
-        //
+    public function edit(Post $post)
+    {   
+        $tags = Tag::all();
+        return view('posts.edit', compact('post','tags'));
     }
 
     /**
@@ -83,9 +117,28 @@ class PostController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Post $post)
     {
-        //
+
+        $request->validate([
+            'title' => 'required', 
+            'body' => 'required',
+            'tags.*' => 'exists:tags,id'
+        ]);
+
+        $data = $request->all();
+
+        $updated = $post->update($data);
+
+        if ($updated) {
+            if (!empty($data['tags'])) {
+                $post->tags()->sync($data['tags']);
+            } else {
+                $post->tags()->detach();
+            }
+
+            return redirect()->route('posts.show', $post->slug);
+        }
     }
 
     /**
@@ -94,8 +147,21 @@ class PostController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Post $post)
     {
-        //
+        if (empty($post)) {
+            abort(404);
+        }
+
+        //ref
+        $title = $post->title;
+
+        //remove
+        $post->tags()->detach();
+        $deleted = $post->delete();
+
+        if ($deleted) {
+            return redirect()->route('posts.index')->with('post-deleted', $title);
+        }
     }
 }
