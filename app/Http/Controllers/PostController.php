@@ -48,12 +48,21 @@ class PostController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Post $post)
+    public function show($slug)
     {
-        $comments = Comment::where('post_id', $post->id)
-                        ->get();
+        /* $comments = Comment::where(     ->g'post_id', $post->id)
+                   et();
 
-        return view('posts.show', compact('post', 'comments'));
+        return view('posts.show', compact('post', 'comments')); */
+
+        $post = Post::where('slug', $slug)
+                ->first();
+
+        if (empty($post)) {
+            abort(404);
+        }
+
+        return view('posts.show', compact('post'));
     }
 
     /**

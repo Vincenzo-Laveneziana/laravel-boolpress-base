@@ -10,6 +10,7 @@ class Post extends Model
         'user_id',
         'title',
         'body',
+        'slug',
     ];
 
     //user (many to one)
@@ -18,8 +19,12 @@ class Post extends Model
     }
 
     //comment (one to many)
-
     public function comments() {
         return $this->hasMany('App\Comment');
+    }
+
+    //tags (many to many)
+    public function tags() {
+        return $this->belongsToMany('App\Tag');
     }
 }

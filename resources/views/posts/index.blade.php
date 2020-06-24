@@ -13,7 +13,7 @@
         <h4>Created: {{ $post->created_at }} , Last updated: {{ $post->updated_at }}</h4>
         <p>{{ $post->body }}</p>
         {{--  @dd($comments) --}}
-        <a href="{{ route('posts.show', $post)}}">Comment</a>
+        <a href="{{ route('posts.show', $post->slug)}}">Read more</a>
         
         {{-- @foreach ($post->comments as $comment)
         
@@ -27,7 +27,7 @@
         <hr>
     @endif
    @endforeach
-    <div class="container d-flex justify-content-center">
+    <div class="container m-5 d-flex justify-content-center">
         {{$posts->links()}}
     </div>
 @endsection
